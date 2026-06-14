@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mapup.geofence.dto.GetGeofencesResponse;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/geofences")
@@ -30,6 +35,22 @@ public class GeofenceController {
 
         return ResponseEntity.ok(
                 geofenceService.createGeofence(request)
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<GetGeofencesResponse>
+    getGeofences(
+
+            @RequestParam(
+                    required = false
+            )
+            String category) {
+
+        return ResponseEntity.ok(
+                geofenceService.getGeofences(
+                        category
+                )
         );
     }
 }

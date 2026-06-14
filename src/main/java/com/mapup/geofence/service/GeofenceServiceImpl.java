@@ -10,6 +10,10 @@ import com.mapup.geofence.repository.GeofenceRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import com.mapup.geofence.dto.GetGeofencesResponse;
+import com.mapup.geofence.dto.GeofenceDetailsResponse;
+
+import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -106,6 +110,74 @@ public class GeofenceServiceImpl
                         "Invalid longitude"
                 );
             }
+        }
+    }
+
+    @Override
+    public GetGeofencesResponse getGeofences(
+            String category) {
+
+        long start = System.nanoTime();
+
+        List<Geofence> geofences;
+
+        if (category != null &&
+                !category.isBlank()) {
+
+            geofences =
+                    repository.findByCategory(
+                            category
+                    );
+
+        } else {
+
+            geofences =
+                    repository.findAll();
+        }
+
+        List<GeofenceDetailsResponse> responseList =
+                geofences.stream()
+                        .map(this::mapToResponse)
+                        .collect(Collectors.toList());
+
+        return GetGeofencesResponse.builder()
+                .geofences(responseList)
+                .timeNs(System.nanoTime() - start)
+                .build();
+    }
+
+    private GeofenceDetailsResponse mapToResponse(
+            Geofence geofence) {
+
+        try {
+
+            List<List<Double>> coordinates =
+                    objectMapper.readValue(
+                            geofence.getCoordinates(),
+                            List.class
+                    );
+
+            return GeofenceDetailsResponse
+                    .builder()
+                    .id(geofence.getId())
+                    .name(geofence.getName())
+                    .description(
+                            geofence.getDescription()
+                    )
+                    .coordinates(coordinates)
+                    .category(
+                            geofence.getCategory()
+                    )
+                    .createdAt(
+                            geofence.getCreatedAt()
+                    )
+                    .build();
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Unable to parse coordinates"
+            );
         }
     }
 }
