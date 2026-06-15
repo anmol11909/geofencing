@@ -1,8 +1,10 @@
 package com.mapup.geofence.controller;
+import com.mapup.geofence.dto.LocationUpdateRequestDto;
 import com.mapup.geofence.dto.VehicleRequestDto;
 import com.mapup.geofence.dto.VehicleResponseDto;
 import com.mapup.geofence.service.VehicleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -31,5 +33,16 @@ public class VehicleController {
             @PathVariable Long id) {
 
         return vehicleService.getVehicleById(id);
+    }
+
+    @PostMapping("/{vehicleId}/location")
+    public ResponseEntity<String> updateLocation(
+            @PathVariable Long vehicleId,
+            @RequestBody LocationUpdateRequestDto requestDto) {
+
+        return ResponseEntity.ok(
+                vehicleService.updateLocation(
+                        vehicleId,
+                        requestDto));
     }
 }

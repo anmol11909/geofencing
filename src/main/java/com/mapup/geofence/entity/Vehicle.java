@@ -30,6 +30,11 @@ public class Vehicle {
 
     private LocalDateTime createdAt;
 
+    private String currentGeofenceId;
+
+
+
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
